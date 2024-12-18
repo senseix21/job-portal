@@ -1,0 +1,16 @@
+# Ignore Go-related temporary files
+*.log
+*.env
+*.out
+*.test
+
+# Ignore version control files
+.git
+
+# Ignore editor and OS-specific files
+*.swp
+*~
+.DS_Store
+
+# Ignore local dependencies
+node_modules
