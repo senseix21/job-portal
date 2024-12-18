@@ -30,9 +30,18 @@ func main() {
 	e.HTTPErrorHandler = middlewares.CustomHTTPErrorHandler
 
 	// Middleware
-	e.Use(middleware.Logger())
-	e.Use(middleware.Recover())
+	e.Use(middleware.Logger())    // Log HTTP requests
+	e.Use(middleware.Recover())   // Recover from panics
+	e.Use(middleware.RequestID()) // Add a unique request ID for each request
+	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
+		AllowOrigins: []string{"http://localhost:3000", "https://your-production-url.com"},
+		AllowMethods: []string{http.MethodGet, http.MethodPost, http.MethodPut, http.MethodPatch, http.MethodDelete},
+	})) // Configure CORS
+	e.Use(middleware.Secure())                                              // Add secure headers (e.g., X-Frame-Options, HSTS)
+	e.Use(middleware.RateLimiter(middleware.NewRateLimiterMemoryStore(20))) // Rate limit: 20 requests per second
+	e.Use(middleware.BodyLimit("2M"))                                       // Limit request body size to 2MB
 
+	// Validator
 	e.Validator = &CustomValidator{validator: validator.New()}
 
 	// Connect to the database
