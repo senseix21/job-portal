@@ -34,8 +34,10 @@ func main() {
 	e.Use(middleware.Recover())   // Recover from panics
 	e.Use(middleware.RequestID()) // Add a unique request ID for each request
 	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
-		AllowOrigins: []string{"http://localhost:3001"},
-		AllowMethods: []string{http.MethodGet, http.MethodPost, http.MethodPut, http.MethodPatch, http.MethodDelete},
+		AllowOrigins:     []string{"http://localhost:3001", "https://your-frontend-domain.com"},
+		AllowMethods:     []string{http.MethodGet, http.MethodPost, http.MethodPut, http.MethodPatch, http.MethodDelete},
+		AllowHeaders:     []string{"Content-Type", "Authorization"},
+		AllowCredentials: true, // Enable credentials
 	})) // Configure CORS
 	// e.Use(middleware.Secure())                                              // Add secure headers (e.g., X-Frame-Options, HSTS)
 	e.Use(middleware.RateLimiter(middleware.NewRateLimiterMemoryStore(20))) // Rate limit: 20 requests per second
