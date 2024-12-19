@@ -34,7 +34,7 @@ func main() {
 	e.Use(middleware.Recover())   // Recover from panics
 	e.Use(middleware.RequestID()) // Add a unique request ID for each request
 	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
-		AllowOrigins:     []string{"http://localhost:3001", "https://your-frontend-domain.com"},
+		AllowOrigins:     []string{"http://localhost:3000", "https://your-frontend-domain.com"},
 		AllowMethods:     []string{http.MethodGet, http.MethodPost, http.MethodPut, http.MethodPatch, http.MethodDelete},
 		AllowHeaders:     []string{"Content-Type", "Authorization"},
 		AllowCredentials: true, // Enable credentials
