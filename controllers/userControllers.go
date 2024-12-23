@@ -77,14 +77,15 @@ func (uc *UserController) Login(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusUnauthorized, "Invalid email or password").SetInternal(err)
 	}
 
-	// Set the JWT token in a secure, HttpOnly cookie
+	// On successful authentication, set the access token as HttpOnly cookie
 	c.SetCookie(&http.Cookie{
 		Name:     "auth_token",
 		Value:    token,
-		HttpOnly: true,
-		Secure:   true, // Set to true if using HTTPS
+		HttpOnly: true, // Ensure cookie is not accessible via JavaScript
+		Secure:   true, // Set to true for production (HTTPS)
 		SameSite: http.SameSiteStrictMode,
-		Expires:  time.Now().Add(24 * time.Hour), // Set cookie expiration
+		Expires:  time.Now().Add(24 * time.Hour), // 1 day expiration
+		Path:     "/",                            // Available for all routes
 	})
 
 	// Return the response using SendResponse
