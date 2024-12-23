@@ -22,7 +22,7 @@ func NewUserService(collection *mongo.Collection) *UserService {
 	return &UserService{Collection: collection}
 }
 
-func (s *UserService) Register(user models.User) error {
+func (s *UserService) Register(user *models.User) error {
 	// Check if email already exists
 	var existingUser models.User
 	err := s.Collection.FindOne(context.TODO(), bson.M{"email": user.Email}).Decode(&existingUser)
@@ -41,8 +41,8 @@ func (s *UserService) Register(user models.User) error {
 
 	// Set timestamps
 	user.ID = primitive.NewObjectID()
-	user.CreatedAt = primitive.NewDateTimeFromTime(time.Now())
-	user.UpdatedAt = primitive.NewDateTimeFromTime(time.Now())
+	user.CreatedAt = time.Now()
+	user.UpdatedAt = time.Now()
 
 	// Insert user into database
 	_, err = s.Collection.InsertOne(context.TODO(), user)

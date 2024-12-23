@@ -47,7 +47,7 @@ func (uc *UserController) Register(c echo.Context) error {
 	}
 
 	// Register the user
-	err = uc.UserService.Register(user)
+	err = uc.UserService.Register(&user)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusConflict, "Failed to register user").SetInternal(err)
 	}
@@ -87,11 +87,6 @@ func (uc *UserController) Login(c echo.Context) error {
 	})
 
 	// Return the response using SendResponse
-	return utils.SendResponse(c, http.StatusOK, "Login successful", map[string]interface{}{
-		"user": map[string]interface{}{
-			"id":    user.ID.Hex(),
-			"email": user.Email,
-			"role":  user.Role,
-		},
-	})
+	loginResponse := utils.CreateLoginResponse(token, user.ID.Hex(), user.Email, user.Role)
+	return c.JSON(http.StatusOK, loginResponse)
 }

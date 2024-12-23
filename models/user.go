@@ -1,6 +1,10 @@
 package models
 
-import "go.mongodb.org/mongo-driver/bson/primitive"
+import (
+	"time"
+
+	"go.mongodb.org/mongo-driver/bson/primitive"
+)
 
 // Role Constants
 const (
@@ -16,6 +20,6 @@ type User struct {
 	Email     string             `json:"email" validate:"required,email" bson:"email"`
 	Password  string             `json:"password" validate:"required"`
 	Role      string             `json:"role" validate:"required,oneof=admin user recruiter"` // Oneof validation for roles
-	CreatedAt primitive.DateTime `json:"created_at" bson:"created_at"`
-	UpdatedAt primitive.DateTime `json:"updated_at" bson:"updated_at"`
+	CreatedAt time.Time          `json:"created_at" bson:"created_at"`
+	UpdatedAt time.Time          `json:"updated_at" bson:"updated_at"`
 }
