@@ -53,14 +53,7 @@ func (uc *UserController) Register(c echo.Context) error {
 	}
 
 	// Return success response with user details
-	return utils.SendResponse(c, http.StatusCreated, "User registered successfully", map[string]interface{}{
-		"id":         user.ID.Hex(),
-		"name":       user.Name,
-		"email":      user.Email,
-		"role":       user.Role,
-		"created_at": user.CreatedAt.Time(),
-		"updated_at": user.UpdatedAt.Time(),
-	})
+	return utils.SendResponse(c, http.StatusCreated, "User registered successfully", user)
 }
 
 // Login handles user login and sets JWT in a cookie
