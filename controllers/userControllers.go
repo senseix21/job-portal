@@ -8,6 +8,7 @@ import (
 	"job-portal/services"
 	"job-portal/utils"
 	"net/http"
+	"time"
 
 	"github.com/labstack/echo/v4"
 )
@@ -83,7 +84,7 @@ func (uc *UserController) Login(c echo.Context) error {
 		HttpOnly: true,
 		Secure:   true, // Set to true if using HTTPS
 		SameSite: http.SameSiteStrictMode,
-		Path:     "/",
+		Expires:  time.Now().Add(24 * time.Hour), // Set cookie expiration
 	})
 
 	// Return the response using SendResponse
