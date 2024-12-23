@@ -29,7 +29,9 @@ func (s *UserService) Register(user models.User) error {
 	if err == nil {
 		return errors.New("email already in use")
 	}
-
+	if user.Role == "" {
+		user.Role = "user"
+	}
 	// Hash password
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
 	if err != nil {
