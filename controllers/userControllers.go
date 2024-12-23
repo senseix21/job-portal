@@ -37,7 +37,10 @@ func (uc *UserController) Register(c echo.Context) error {
 	if err := c.Bind(&user); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, "Invalid input").SetInternal(err)
 	}
-
+	// Set default role if not provided
+	if user.Role == "" {
+		user.Role = "user"
+	}
 	// Validate the user struct
 	if err := c.Validate(&user); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, "Validation failed").SetInternal(err)
