@@ -23,6 +23,11 @@ type Job struct {
 	ApplyBy          time.Time          `json:"apply_by" bson:"apply_by"`
 	CreatedAt        time.Time          `json:"created_at" bson:"created_at"`
 	UpdatedAt        time.Time          `json:"updated_at" bson:"updated_at"`
+
+	// Company Info (nested object)
+	CompanyName      string `json:"company_name" bson:"company_name"`
+	CompanyLogo      string `json:"company_logo" bson:"company_logo"`
+	CompanyDescription string `json:"company_description" bson:"company_description"`
 }
 
 // Enums for Job Fields
