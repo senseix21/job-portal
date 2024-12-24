@@ -83,7 +83,7 @@ func (uc *UserController) Login(c echo.Context) error {
 		Value:    token,
 		HttpOnly: true, // Ensure cookie is not accessible via JavaScript
 		Secure:   true, // Set to true for production (HTTPS)
-		SameSite: http.SameSiteStrictMode,
+		SameSite: http.StatusOK,
 		Expires:  time.Now().Add(24 * time.Hour), // 1 day expiration
 		Path:     "/",                            // Available for all routes
 	})
