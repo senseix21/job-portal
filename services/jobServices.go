@@ -188,11 +188,10 @@ func ApplyFilters(datePosted, jobType, salaryRange, workLocation string, existin
 		existingFilter = bson.M{}
 	}
 
-	// Date filter (e.g., last 30 days)
-	// Date filter (e.g., last 30 days, last 7 days, last 24 hours)
-	if datePosted == "anytime" {
-	// No filter
-	} else if datePosted != "" {
+	// Assuming existingFilter is already declared and ready for use
+if datePosted == "anytime" {
+	// No filter, meaning all dates are accepted
+} else if datePosted != "" {
 	// Handle date range logic (last 7 days, last 30 days, last 24 hours, etc.)
 	var postedDate time.Time
 	switch datePosted {
@@ -200,12 +199,12 @@ func ApplyFilters(datePosted, jobType, salaryRange, workLocation string, existin
 		postedDate = time.Now().AddDate(0, 0, -7)
 	case "last_24_hours":
 		postedDate = time.Now().Add(-24 * time.Hour) // Subtract 24 hours from the current time
-	default:
+	case "last_30_days":
 		postedDate = time.Now().AddDate(0, 0, -30) // Default to last 30 days
 	}
+	// Add the date filter to the existing filter
 	existingFilter["posted_at"] = bson.M{"$gte": postedDate}
 }
-
 
 	// Job Type filter (full-time, part-time, etc.)
 	if jobType != "" {
