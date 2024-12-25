@@ -6,12 +6,14 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
+// Job represents a job posting
 type Job struct {
 	ID               primitive.ObjectID `bson:"_id,omitempty" json:"id,omitempty"`
 	Title            string             `json:"title" validate:"required"`
 	Description      string             `json:"description" validate:"required"`
 	Location         string             `json:"location" validate:"required"`
-	SalaryRange      string             `json:"salary_range" validate:"required"`
+	MinSalary        float64            `json:"min_salary" bson:"min_salary" validate:"required"` // Minimum salary (numeric)
+	MaxSalary        float64            `json:"max_salary" bson:"max_salary" validate:"required"` // Maximum salary (numeric)
 	Type             string             `json:"type" validate:"required,oneof=full-time part-time contract"`
 	Experience       string             `json:"experience" validate:"required,oneof=entry mid senior"`
 	Education        string             `json:"education" validate:"required,oneof=bachelor master phd"`
@@ -28,6 +30,9 @@ type Job struct {
 	CompanyName      string `json:"company_name" bson:"company_name"`
 	CompanyLogo      string `json:"company_logo" bson:"company_logo"`
 	CompanyDescription string `json:"company_description" bson:"company_description"`
+
+	// Work Location (On-site, Remote, Hybrid)
+	WorkLocation     string `json:"work_location" bson:"work_location" validate:"required,oneof=on-site remote hybrid"`
 }
 
 // Enums for Job Fields
@@ -41,4 +46,7 @@ const (
 	Bachelor   = "bachelor"
 	Master     = "master"
 	PhD        = "phd"
+	OnSite     = "on-site"
+	Remote     = "remote"
+	Hybrid     = "hybrid"
 )

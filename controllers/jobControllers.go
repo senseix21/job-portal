@@ -5,8 +5,10 @@ import (
 	"job-portal/services"
 	"job-portal/utils"
 	"net/http"
+	"strconv"
 
 	"github.com/labstack/echo/v4"
+	"go.mongodb.org/mongo-driver/bson"
 )
 
 type JobController struct {
@@ -75,13 +77,63 @@ func (jc *JobController) DeleteJobHandler(c echo.Context) error {
 	return utils.SendResponse(c, http.StatusOK, "Job deleted successfully", deletedJob)
 }
 
-// ListJobsHandler retrieves all jobs with optional filters
+
+// ListJobsHandler handles the GET request for fetching job listings with filters and search
 func (jc *JobController) ListJobsHandler(c echo.Context) error {
-	filter := make(map[string]interface{}) // Add logic to parse query params into filters if needed
-	jobs, err := jc.JobService.ListJobs(filter)
-	if err != nil {
-		return err // Pass errors to the custom error handler
+	// Parse query parameters
+	datePosted := c.QueryParam("datePosted")     // e.g., 'anytime' or a specific date range
+	jobType := c.QueryParam("jobType")           // e.g., 'full-time', 'part-time', etc.
+	salaryRange := c.QueryParam("salaryRange")   // e.g., '0-2.5k'
+	workLocation := c.QueryParam("workLocation") // 'on-site', 'remote', 'hybrid'
+	search := c.QueryParam("search")             // Search term (e.g., job title or description)
+
+	// Pagination (default to page 1 and 10 items per page)
+	page, err := strconv.Atoi(c.QueryParam("page"))
+	if err != nil || page <= 0 {
+		page = 1
+	}
+	pageSize, err := strconv.Atoi(c.QueryParam("pageSize"))
+	if err != nil || pageSize <= 0 {
+		pageSize = 10
 	}
 
-	return utils.SendResponse(c, http.StatusOK, "Jobs retrieved successfully", jobs)
+	// Apply filters to construct the query filter
+	// Here, we need to pass an additional bson.M for the existing filters
+	filter := bson.M{} // Initialize the filter as an empty bson.M
+	filter, err = services.ApplyFilters(datePosted, jobType, salaryRange, workLocation, filter)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, map[string]interface{}{
+			"status":  http.StatusInternalServerError,
+			"message": "Failed to apply filters",
+			"error":   err.Error(),
+		})
+	}
+
+	// Fetch filtered jobs with pagination and search
+	// Now passing all the necessary arguments to ListJobs
+	jobs, pagination, err := jc.JobService.ListJobs(filter, page, pageSize, search, datePosted, jobType, salaryRange, workLocation)
+	if err != nil {
+		// Handle error and return a custom error response
+		return c.JSON(http.StatusInternalServerError, map[string]interface{}{
+			"status":  http.StatusInternalServerError,
+			"message": "Failed to retrieve jobs",
+			"error":   err.Error(),
+		})
+	}
+
+	// Prepare response data with pagination
+	response := map[string]interface{}{
+		"status":      http.StatusOK,
+		"message":     "Jobs retrieved successfully",
+		"totalItems":  pagination["totalItems"],
+		"totalPages":  pagination["totalPages"],
+		"currentPage": pagination["currentPage"],
+		"pageSize":    pagination["pageSize"],
+		"data": map[string]interface{}{
+			"jobs": jobs,
+		},
+	}
+
+	// Send response
+	return c.JSON(http.StatusOK, response)
 }
