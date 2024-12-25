@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"job-portal/models"
 	"math"
-	"regexp"
 	"strconv"
 	"strings"
 	"time"
@@ -213,14 +212,10 @@ func ApplyFilters(datePosted, jobType, salaryRange, workLocation string, existin
 		existingFilter["type"] = jobType
 	}
 
-		// Salary Range filter (e.g., "$50,000 - $90,000")
-	if salaryRange != "" {
-    // Remove currency symbols, commas, and spaces to extract numeric values
-    re := regexp.MustCompile(`[^\d.-]`) // Match everything except digits, period, and minus sign
-    cleanedSalaryRange := re.ReplaceAllString(salaryRange, "")
-
+		// Salary Range filter (e.g., "50000-100000")
+if salaryRange != "" {
     // Split the salary range by "-"
-    salaryRangeSplit := strings.Split(cleanedSalaryRange, "-")
+    salaryRangeSplit := strings.Split(salaryRange, "-")
     if len(salaryRangeSplit) == 2 {
         // Convert the salary values to float64
         minSalary, err := strconv.ParseFloat(salaryRangeSplit[0], 64)
@@ -232,12 +227,16 @@ func ApplyFilters(datePosted, jobType, salaryRange, workLocation string, existin
             return nil, fmt.Errorf("invalid max salary: %v", err)
         }
 
+        fmt.Println(minSalary, maxSalary) // Debugging: check the parsed values
+
         // Add the salary filter to the existing filter
-        existingFilter["min_salary"] = bson.M{
-            "$gte": minSalary,
-        }
-        existingFilter["max_salary"] = bson.M{
-            "$lte": maxSalary,
+        existingFilter["$and"] = []bson.M{
+            {
+                "min_salary": bson.M{"$gte": minSalary},
+            },
+            {
+                "max_salary": bson.M{"$lte": maxSalary},
+            },
         }
     } else {
         return nil, fmt.Errorf("invalid salary range format: %s", salaryRange)
