@@ -34,11 +34,19 @@ func main() {
 	e.Use(middleware.Recover())   // Recover from panics
 	e.Use(middleware.RequestID()) // Add a unique request ID for each request
 	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
-		AllowOrigins:     []string{ "https://job-portal-frontend-pink.vercel.app", "http://localhost:3000"},
-		AllowMethods:     []string{http.MethodGet, http.MethodPost, http.MethodPut, http.MethodPatch, http.MethodDelete},
-		AllowHeaders:     []string{"Content-Type", "Authorization"},
-		AllowCredentials: true, // Enable credentials
-	})) // Configure CORS
+		AllowOrigins: []string{"https://job-portal-frontend-pink.vercel.app", "http://localhost:3000"},
+		AllowMethods: []string{
+		  http.MethodGet,
+		  http.MethodPost,
+		  http.MethodPut,
+		  http.MethodPatch,
+		  http.MethodDelete,
+		  http.MethodOptions, // Allow OPTIONS for preflight
+		},
+		AllowHeaders: []string{"Content-Type", "Authorization"},
+		AllowCredentials: true,
+	  }))
+	  
 	// e.Use(middleware.Secure())                                              // Add secure headers (e.g., X-Frame-Options, HSTS)
 	e.Use(middleware.RateLimiter(middleware.NewRateLimiterMemoryStore(20))) // Rate limit: 20 requests per second
 	e.Use(middleware.BodyLimit("2M"))                                       // Limit request body size to 2MB
