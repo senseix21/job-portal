@@ -2,6 +2,7 @@
 # Job Portal Backend
 
 A backend application for managing job portal functionalities built using Go and the Echo framework. This backend provides APIs for managing users, jobs, and other job portal-related features.
+live url: https://job-portal-frontend-pink.vercel.app/
 
 ## Table of Contents
 
